@@ -34,7 +34,32 @@ impl Default for Person {
 // 5. Parse the second element from the split operation into a `u8` as the age.
 // 6. If parsing the age fails, return the default of `Person`.
 impl From<&str> for Person {
-    fn from(s: &str) -> Self {}
+    fn from(s: &str) -> Self {
+        if s.is_empty() {
+            Person::default();
+        }
+        let mut it = s.split(',');
+        let Some(name) = it.next() else {
+            return Person::default();
+        };
+
+        if name.is_empty() {
+            return Person::default();
+        }
+
+        let age = it.next().map(|s| s.parse::<u8>());
+        if let Some(_too_many_commas) = it.next() {
+            return Person::default();
+        }
+
+        match age {
+            Some(Ok(num)) => Person {
+                name: name.to_string(),
+                age: num,
+            },
+            _ => Person::default(),
+        }
+    }
 }
 
 fn main() {
